@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Radiohead TenMood</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #101014 0%, #060608 100%);
+            color: #e4e4e7; 
+            padding: 2rem 1.5rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+
+        header { text-align: center; margin-bottom: 2rem; max-width: 700px; margin-top: 2rem; }
+        header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.05em; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 0 25px rgba(255,255,255,0.1); }
+        
+        .filter-section { width: 100%; max-width: 1000px; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+        .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .filter-btn { background-color: rgba(26, 26, 31, 0.8); border: 1px solid #2d2d36; color: #a1a1aa; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s ease; }
+        .filter-btn:hover { background-color: #2d2d36; color: #ffffff; }
+        .filter-btn.active { background-color: #e4e4e7; color: #0c0c0e; border-color: #e4e4e7; font-weight: 700; }
+        
+        .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1200px; margin-bottom: 4rem; }
+        
+        .song-card { background-color: rgba(21, 21, 24, 0.9); border: 1px solid #232329; border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
+        .song-card:hover { transform: translateY(-5px); border-color: #3f3f46; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+        
+        .tags-container { display: flex; gap: 0.4rem; flex-wrap: wrap; max-width: 65%; }
+        .tag { font-size: 0.7rem; padding: 0.3rem 0.5rem; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+        
+        .tag.우울 { background-color: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .tag.분노 { background-color: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .tag.불안 { background-color: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .tag.좌절 { background-color: rgba(139, 92, 246, 0.1); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.2); }
+        .tag.공허 { background-color: rgba(107, 114, 128, 0.1); color: #9ca3af; border: 1px solid rgba(107, 114, 128, 0.2); }
+        .tag.기쁨 { background-color: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .tag.반전 { background-color: rgba(236, 72, 153, 0.1); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.2); }
+        .tag.서늘 { background-color: rgba(6, 182, 212, 0.1); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.2); }
+        .tag.따뜻 { background-color: rgba(250, 204, 21, 0.1); color: #fde047; border: 1px solid rgba(250, 204, 21, 0.2); }
+        .tag.신남 { background-color: rgba(132, 204, 22, 0.1); color: #a3e635; border: 1px solid rgba(132, 204, 22, 0.2); }
+
+        .album-info-box { display: flex; flex-direction: column; align-items: flex-end; max-width: 35%; }
+        .album-name { font-size: 0.65rem; color: #71717a; font-weight: 700; margin-bottom: 0.4rem; text-align: right; line-height: 1.2; word-break: keep-all; }
+        .album-cover { width: 44px; height: 44px; border-radius: 4px; background-color: #27272a; object-fit: cover; border: 1px solid #3f3f46; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+
+        .lyrics-box { margin-bottom: 1.5rem; flex-grow: 1; }
+        .lyrics-en { font-family: 'Georgia', serif; font-style: italic; font-size: 1.05rem; color: #f4f4f5; line-height: 1.4; margin-bottom: 0.5rem; word-break: keep-all; }
+        .lyrics-kr { font-size: 0.85rem; color: #a1a1aa; line-height: 1.4; word-break: keep-all; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #27272a; padding-top: 1rem; }
+        .song-title { font-size: 1.05rem; color: #ffffff; font-weight: 700; line-height: 1.2; max-width: 60%; word-break: keep-all; }
+        
+        .music-links { display: flex; gap: 0.5rem; }
+        .link-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #27272a; transition: all 0.2s; text-decoration: none; cursor: pointer; border: none; }
+        .link-btn svg { width: 16px; height: 16px; fill: #a1a1aa; transition: fill 0.2s; }
+        .link-btn.apple:hover { background-color: #fa243c; } .link-btn.apple:hover svg { fill: #ffffff; }
+        .link-btn.spotify:hover { background-color: #1ed760; } .link-btn.spotify:hover svg { fill: #000000; }
+        .link-btn.youtube:hover { background-color: #ff0000; } .link-btn.youtube:hover svg { fill: #ffffff; }
+
+        .count-display { margin-top: 1rem; font-size: 0.9rem; color: #71717a; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Radiohead TenMood</h1>
+        <div class="count-display" id="countDisplay">데이터 로딩 중...</div>
+    </header>
+
+    <div class="filter-section">
+        <div class="filter-row" id="moodFilters">
+            <button class="filter-btn active" onclick="toggleFilter('mood', 'all', this)">전체 무드</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '우울', this)">우울</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '분노', this)">분노</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '불안', this)">불안</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '좌절', this)">좌절</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '공허', this)">공허</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '기쁨', this)">기쁨</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '반전', this)">반전</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '서늘', this)">서늘</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '따뜻', this)">따뜻</button>
+            <button class="filter-btn" onclick="toggleFilter('mood', '신남', this)">신남</button>
+        </div>
+        <div class="filter-row" id="albumFilters">
+            <button class="filter-btn active" onclick="toggleFilter('album', 'all', this)">전체 앨범</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 1, this)">1집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 2, this)">2집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 3, this)">3집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 4, this)">4집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 5, this)">5집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 6, this)">6집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 7, this)">7집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 8, this)">8집</button>
+            <button class="filter-btn" onclick="toggleFilter('album', 9, this)">9집</button>
+        </div>
+    </div>
+
+    <div class="song-grid" id="songGrid"></div>
+
+    <script>
+        const iconApple = `<svg viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>`;
+        const iconSpotify = `<svg viewBox="0 0 496 512"><path d="M248 8C111.1 8 0 119.1 0 256s111.1 248 248 248 248-111.1 248-248S384.9 8 248 8zm100.7 364.9c-4.2 0-6.8-1.3-10.7-3.6-62.4-37.6-135-39.2-206.7-24.5-3.9 1-9 2.6-11.9 2.6-9.7 0-15.8-7.7-15.8-15.8 0-10.3 6.1-15.2 13.6-16.8 81.9-18.1 165.6-16.5 237 26.2 6.1 3.9 9.7 7.4 9.7 16.5s-7.1 15.4-15.2 15.4zm26.9-65.6c-5.2 0-8.7-2.3-12.3-4.2-72.5-47-171.6-53.1-248.6-32.4-4.5 1.3-9 2.9-13.6 2.9-12.3 0-20.1-9-20.1-20.1 0-12.9 7.4-19.1 16.5-21.7 89.6-24.5 198.6-16.8 281.4 36.5 6.1 3.9 11 8.7 11 19.4 0 12-9.7 19.6-24.3 19.6zm31.1-73.9c-6.1 0-10.7-2.6-15.8-5.5-84.4-52.7-217.1-61.1-304.7-31.1-5.8 2-11.3 3.2-16.5 3.2-15.8 0-26.9-11.3-26.9-26.9 0-17.1 9-24.5 20.7-28.8 102.2-34.9 249.4-25.2 346.5 34.6 7.4 4.5 13.6 10.3 13.6 22.3 0 16.1-11.7 29.7-27.5 29.7z"/></svg>`;
+        const iconYoutube = `<svg viewBox="0 0 576 512"><path d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg>`;
+
+                    // 네이버 보안 서버 차단을 우회하는 wsrv.nl 프록시를 적용한 최종 앨범 데이터
+        const albumData = {
+            1: { name: "Pablo Honey", cover: "https://upload.wikimedia.org/wikipedia/en/0/0f/Radiohead.pablohoney.albumart.jpg" },
+            2: { name: "The Bends", cover: "https://upload.wikimedia.org/wikipedia/en/5/55/Radioheadthebends.png" },
+            3: { name: "OK Computer", cover: "https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png" },
+            4: { name: "Kid A", cover: "https://wsrv.nl/?url=cafeptthumb-phinf.pstatic.net/MjAyNjAyMTVfMjY5/MDAxNzcxMTE4MjczNDc4.bVKw8e8C7NrZlGyHrlUtkUG6a5AhYateJoVlSo4zpS4g.ZCWIOEde4AHytwQtZrKrPcUsxC0Oob61nZmmtAnrC5Mg.JPEG/Screenshot%EF%BC%BF20260215%EF%BC%BF094941%EF%BC%BFSpotify.jpg" },
+            5: { name: "Amnesiac", cover: "https://upload.wikimedia.org/wikipedia/en/8/8c/Radiohead_-_Amnesiac_cover.png" },
+            6: { name: "Hail to the Thief", cover: "https://upload.wikimedia.org/wikipedia/en/6/61/Radioheadhailtothethief.png" },
+            7: { name: "In Rainbows", cover: "https://wsrv.nl/?url=cafeptthumb-phinf.pstatic.net/MjAyNjAyMTVfMTg4/MDAxNzcxMTE4MjczNTE0.0l5DWby0S6rgfG5sMASbAcDht-U35feQQZodv5BEUF0g.Aouw9Hr8GTyICFlOrrGuCOUTWQdelM5D_xT5Avh7ZBUg.JPEG/Screenshot%EF%BC%BF20260215%EF%BC%BF095129%EF%BC%BFSpotify.jpg" },
+            8: { name: "The King of Limbs", cover: "https://wsrv.nl/?url=cafeptthumb-phinf.pstatic.net/MjAyNjAyMTVfMjMz/MDAxNzcxMTE4Mjc0MDQy.S-VAukEKXlpkP4tr8AtLxvBkVZawo7XfhMRBm1325hUg.CELwaDNJyXHTCaQGoLeHGOEAlFyNvAAIJB8aINGfkUMg.JPEG/Screenshot%EF%BC%BF20260215%EF%BC%BF095147%EF%BC%BFSpotify.jpg" },
+            9: { name: "A Moon Shaped Pool", cover: "https://wsrv.nl/?url=cafeptthumb-phinf.pstatic.net/MjAyNjAyMTVfMTM3/MDAxNzcxMTE4MjczNDQ4.gMR031Qz2GEqPBWQnDqIDXMFz3a0QgBt_hQ2LdcBv-8g.bXbiUoqlh25rtlwNW0SuQOWjpLQl05I0_WWK2l7_Y5wg.JPEG/Screenshot%EF%BC%BF20260215%EF%BC%BF095201%EF%BC%BFSpotify.jpg" }
+        };
+
+        const rawData = [
+            "1|You|분노,공허,신남|You, me, and everything caught in the fire.|너, 나, 그리고 불길에 휩싸인 모든 것들.|https://www.youtube.com/results?search_query=Radiohead+You+official+audio",
+            "1|Creep|우울,좌절,공허|I'm a creep, I'm a weirdo. What the hell am I doing here?|난 찌질이야, 괴짜지. 내가 여기서 대체 뭘 하고 있는 거지?|https://www.youtube.com/results?search_query=Radiohead+Creep+official+music+video",
+            "1|How Do You?|분노,신남,반전|He's a bitter man, and he's sure.|그는 씁쓸한 남자야, 그리고 그는 확신하지.|https://www.youtube.com/results?search_query=Radiohead+How+Do+You+official+audio",
+            "1|Stop Whispering|따뜻,기쁨,신남|Stop whispering, start shouting.|속삭이는 건 그만둬, 소리치기 시작해.|https://www.youtube.com/results?search_query=Radiohead+Stop+Whispering+official+music+video",
+            "1|Thinking About You|우울,공허,따뜻|I'm playing with myself, what do you care?|난 나 혼자 놀고 있어, 네가 무슨 상관이야?|https://www.youtube.com/results?search_query=Radiohead+Thinking+About+You+official+audio",
+            "1|Anyone Can Play Guitar|신남,반전,분노|Grow my hair, I wanna be Jim Morrison.|머리를 길러야지, 짐 모리슨이 되고 싶어.|https://www.youtube.com/results?search_query=Radiohead+Anyone+Can+Play+Guitar+official+music+video",
+            "1|Ripcord|서늘,불안,분노|Soul destroyed with clever toys for little boys.|어린 소년들을 위한 영리한 장난감에 영혼이 파괴됐어.|https://www.youtube.com/results?search_query=Radiohead+Ripcord+official+audio",
+            "1|Vegetable|좌절,우울,분노|I never wanted to be a vegetable.|난 결코 식물인간이 되고 싶지 않았어.|https://www.youtube.com/results?search_query=Radiohead+Vegetable+official+audio",
+            "1|Prove Yourself|우울,좌절,공허|I'm better off dead.|차라리 죽는 게 낫겠어.|https://www.youtube.com/results?search_query=Radiohead+Prove+Yourself+official+audio",
+            "1|I Can't|서늘,공허,불안|Please forget the words that I just blurted out.|내가 방금 내뱉은 말들은 제발 잊어줘.|https://www.youtube.com/results?search_query=Radiohead+I+Cant+official+audio",
+            "1|Lurgee|따뜻,공허,기쁨|I feel better, I feel better now you've gone.|기분이 나아, 네가 떠나고 나니 기분이 나아졌어.|https://www.youtube.com/results?search_query=Radiohead+Lurgee+official+audio",
+            "1|Blow Out|공허,불안,서늘|All I touch turns to stone.|내가 만지는 모든 건 돌로 변해버려.|https://www.youtube.com/results?search_query=Radiohead+Blow+Out+official+audio",
+            "2|Planet Telex|공허,서늘,반전|You can force it but it will not come.|억지로 할 순 있지만, 결코 이루어지지 않을 거야.|https://www.youtube.com/results?search_query=Radiohead+Planet+Telex+official+audio",
+            "2|The Bends|분노,불안,신남|Where do we go from here? The words are coming out all weird.|이제 우린 어디로 가야 해? 말들이 온통 이상하게 나오고 있어.|https://www.youtube.com/results?search_query=Radiohead+The+Bends+official+music+video",
+            "2|High and Dry|따뜻,우울,공허|Don't leave me high, don't leave me dry.|날 외롭게 두지 마, 날 메마르게 두지 마.|https://www.youtube.com/results?search_query=Radiohead+High+and+Dry+official+music+video",
+            "2|Fake Plastic Trees|공허,우울,좌절|And if I could be who you wanted... All the time.|내가 네가 원하는 사람이 될 수 있다면... 언제나.|https://www.youtube.com/results?search_query=Radiohead+Fake+Plastic+Trees+official+music+video",
+            "2|Bones|신남,분노,불안|I used to fly like Peter Pan.|난 피터팬처럼 날아다니곤 했지.|https://www.youtube.com/results?search_query=Radiohead+Bones+official+audio",
+            "2|(Nice Dream)|기쁨,따뜻,공허|They love me like I was a brother.|그들은 날 형제처럼 사랑해 주지. 좋은 꿈이야.|https://www.youtube.com/results?search_query=Radiohead+Nice+Dream+official+music+video",
+            "2|Just|분노,서늘,신남|You do it to yourself, you do. And that's what really hurts.|네가 자초한 일이야, 다 네가 한 짓이지. 그게 정말 아픈 거지.|https://www.youtube.com/results?search_query=Radiohead+Just+official+music+video",
+            "2|My Iron Lung|분노,불안,서늘|This is our new song. Just like the last one.|이건 우리의 새 노래야. 지난번 노래랑 똑같지.|https://www.youtube.com/results?search_query=Radiohead+My+Iron+Lung+official+music+video",
+            "2|Bullet Proof... I Wish I Was|우울,좌절,공허|Every day, every hour, I wish that I was bullet proof.|매일, 매 시간마다, 내가 방탄이었으면 좋겠다고 생각해.|https://www.youtube.com/results?search_query=Radiohead+Bullet+Proof+I+Wish+I+Was+official+audio",
+            "2|Black Star|공허,서늘,우울|I get on the train and I just stand about now.|기차에 올라타서 그저 멍하니 서 있어.|https://www.youtube.com/results?search_query=Radiohead+Black+Star+official+audio",
+            "2|Sulk|우울,분노,좌절|Sometimes you melt, sometimes you burn.|때론 넌 녹아내리고, 때론 타버리지.|https://www.youtube.com/results?search_query=Radiohead+Sulk+official+audio",
+            "2|Street Spirit (Fade Out)|우울,공허,서늘|Immerse your soul in love.|너의 영혼을 사랑 속에 담가둬.|https://www.youtube.com/results?search_query=Radiohead+Street+Spirit+Fade+Out+official+music+video",
+            "3|Airbag|반전,신남,기쁨|In an interstellar burst, I am back to save the universe.|성간 폭발 속에서, 난 우주를 구하러 돌아왔어.|https://www.youtube.com/results?search_query=Radiohead+Airbag+official+audio",
+            "3|Paranoid Android|불안,분노,반전|When I am king, you will be first against the wall.|내가 왕이 되면, 널 제일 먼저 처형대에 세울 거야.|https://www.youtube.com/results?search_query=Radiohead+Paranoid+Android+official+music+video",
+            "3|Subterranean Homesick Alien|공허,서늘,따뜻|I'd show them the stars and the meaning of life.|난 그들에게 별들과 삶의 의미를 보여줄 텐데.|https://www.youtube.com/results?search_query=Radiohead+Subterranean+Homesick+Alien+official+audio",
+            "3|Exit Music (For a Film)|서늘,분노,좌절|We hope your rules and wisdom choke you.|너희의 규칙과 지혜가 너희 목을 조르길 바라.|https://www.youtube.com/results?search_query=Radiohead+Exit+Music+For+a+Film+official+audio",
+            "3|Let Down|좌절,우울,따뜻|One day I am gonna grow wings, a chemical reaction.|언젠가 나에게도 날개가 돋아날 거야, 화학 작용처럼.|https://www.youtube.com/results?search_query=Radiohead+Let+Down+official+audio",
+            "3|Karma Police|서늘,우울,반전|For a minute there, I lost myself, I lost myself.|잠시 동안, 난 나 자신을 잃어버렸어.|https://www.youtube.com/results?search_query=Radiohead+Karma+Police+official+music+video",
+            "3|Fitter Happier|불안,서늘,공허|A pig in a cage on antibiotics.|항생제를 맞으며 우리에 갇힌 돼지.|https://www.youtube.com/results?search_query=Radiohead+Fitter+Happier+official+audio",
+            "3|Electioneering|신남,분노,불안|I will stop, I will stop at nothing.|난 멈추지 않을 거야, 그 무엇에도 멈추지 않아.|https://www.youtube.com/results?search_query=Radiohead+Electioneering+official+audio",
+            "3|Climbing Up the Walls|불안,서늘,공허|I am the pick in the ice. Do not cry out or hit the alarm.|난 얼음을 깨는 송곳이야. 소리치거나 비상벨을 누르지 마.|https://www.youtube.com/results?search_query=Radiohead+Climbing+Up+the+Walls+official+audio",
+            "3|No Surprises|우울,공허,서늘|No alarms and no surprises, please.|아무런 경고도, 어떤 놀라움도 없기를.|https://www.youtube.com/results?search_query=Radiohead+No+Surprises+official+music+video",
+            "3|Lucky|기쁨,반전,신남|It's gonna be a glorious day. I feel my luck could change.|아주 영광스러운 날이 될 거야. 내 행운이 바뀔 것 같아.|https://www.youtube.com/results?search_query=Radiohead+Lucky+official+music+video",
+            "3|The Tourist|공허,따뜻,좌절|Hey man, slow down. Slow down.|이봐, 천천히 좀 가. 속도 좀 늦추라고.|https://www.youtube.com/results?search_query=Radiohead+The+Tourist+official+audio",
+            "4|Everything in Its Right Place|공허,서늘,반전|Yesterday I woke up sucking a lemon.|어제 난 레몬을 빨아먹으며 잠에서 깼어.|https://www.youtube.com/results?search_query=Radiohead+Everything+in+Its+Right+Place+official+audio",
+            "4|Kid A|서늘,우울,공허|We've got heads on sticks.|우린 막대기에 꽂힌 머리들을 들고 있지.|https://www.youtube.com/results?search_query=Radiohead+Kid+A+official+audio",
+            "4|The National Anthem|불안,신남,분노|Everyone is so near, everyone has got the fear.|모두가 너무나 가까이 있어, 모두가 두려움에 떨고 있지.|https://www.youtube.com/results?search_query=Radiohead+The+National+Anthem+official+audio",
+            "4|How to Disappear Completely|좌절,공허,우울|I'm not here. This isn't happening.|난 여기에 없어. 이건 일어나는 일이 아니야.|https://www.youtube.com/results?search_query=Radiohead+How+to+Disappear+Completely+official+audio",
+            "4|Treefingers|공허,서늘,따뜻|(Instrumental)|(침묵 속에서 메아리치는 고독한 울림)|https://www.youtube.com/results?search_query=Radiohead+Treefingers+official+audio",
+            "4|Optimistic|따뜻,반전,기쁨|You can try the best you can. The best you can is good enough.|최선을 다해봐. 네가 할 수 있는 최선이면 충분해.|https://www.youtube.com/results?search_query=Radiohead+Optimistic+official+audio",
+            "4|In Limbo|불안,공허,서늘|I'm lost at sea, don't bother me.|난 바다에서 길을 잃었어, 날 방해하지 마.|https://www.youtube.com/results?search_query=Radiohead+In+Limbo+official+audio",
+            "4|Idioteque|불안,분노,신남|Here, I'm allowed everything all of the time.|여기서 난, 항상 모든 것이 허락돼.|https://www.youtube.com/results?search_query=Radiohead+Idioteque+official+audio",
+            "4|Morning Bell|우울,서늘,불안|Release me, release me. Please, release me.|날 풀어줘, 날 놓아줘. 제발 날 풀어줘.|https://www.youtube.com/results?search_query=Radiohead+Morning+Bell+official+audio",
+            "4|Motion Picture Soundtrack|우울,따뜻,공허|I will see you in the next life.|다음 생에서 널 만날게.|https://www.youtube.com/results?search_query=Radiohead+Motion+Picture+Soundtrack+official+audio",
+            "5|Packt Like Sardines in a Crushd Tin Box|분노,서늘,불안|I'm a reasonable man, get off my case.|난 이성적인 사람이야, 내 일에 신경 꺼.|https://www.youtube.com/results?search_query=Radiohead+Packt+Like+Sardines+official+audio",
+            "5|Pyramid Song|공허,따뜻,서늘|There was nothing to fear and nothing to doubt.|두려워할 것도, 의심할 것도 없었지.|https://www.youtube.com/results?search_query=Radiohead+Pyramid+Song+official+music+video",
+            "5|Pulk/Pull Revolving Doors|불안,공허,서늘|There are doors that open by themselves.|스스로 열리는 문들이 있어.|https://www.youtube.com/results?search_query=Radiohead+Pulk+Pull+Revolving+Doors+official+audio",
+            "5|You and Whose Army?|분노,반전,신남|Come on if you think you can take us on.|우릴 상대할 수 있을 것 같으면 어디 한 번 덤벼봐.|https://www.youtube.com/results?search_query=Radiohead+You+and+Whose+Army+official+audio",
+            "5|I Might Be Wrong|반전,신남,기쁨|I might be wrong, I could have sworn I saw a light coming on.|내가 틀렸을지도 몰라, 불빛이 켜지는 걸 봤다고 확신했는데.|https://www.youtube.com/results?search_query=Radiohead+I+Might+Be+Wrong+official+audio",
+            "5|Knives Out|서늘,우울,분노|I want you to know, he's not coming back.|네가 알았으면 해, 그는 돌아오지 않아.|https://www.youtube.com/results?search_query=Radiohead+Knives+Out+official+music+video",
+            "5|Morning Bell/Amnesiac|우울,공허,서늘|Cut the kids in half, cut the kids in half.|아이들을 반으로 잘라버려.|https://www.youtube.com/results?search_query=Radiohead+Morning+Bell+Amnesiac+official+audio",
+            "5|Dollars and Cents|분노,불안,서늘|We are the dollars and cents and the pounds and pence.|우리는 달러와 센트, 그리고 파운드와 펜스일 뿐이지.|https://www.youtube.com/results?search_query=Radiohead+Dollars+and+Cents+official+audio",
+            "5|Hunting Bears|공허,서늘,불안|(Instrumental)|(황량한 벌판을 걷는 듯한 기타의 울음)|https://www.youtube.com/results?search_query=Radiohead+Hunting+Bears+official+audio",
+            "5|Like Spinning Plates|공허,좌절,불안|While you make pretty speeches, I'm being cut to shreds.|네가 번지르르한 연설을 하는 동안, 난 갈기갈기 찢겨나가고 있어.|https://www.youtube.com/results?search_query=Radiohead+Like+Spinning+Plates+official+audio",
+            "5|Life in a Glasshouse|불안,서늘,분노|Well of course I'd like to sit around and chat. But someone's listening in.|물론 나도 여기 앉아서 수다나 떨고 싶지. 하지만 누군가 엿듣고 있어.|https://www.youtube.com/results?search_query=Radiohead+Life+in+a+Glasshouse+official+audio",
+            "6|2 + 2 = 5|분노,반전,신남|It's the devil's way now, there is no way out.|이젠 악마의 방식이야, 빠져나갈 길은 없어.|https://www.youtube.com/results?search_query=Radiohead+2+2+5+official+audio",
+            "6|Sit Down. Stand Up.|반전,불안,신남|Walk into the jaws of hell.|지옥의 아가리 속으로 걸어 들어가.|https://www.youtube.com/results?search_query=Radiohead+Sit+Down+Stand+Up+official+audio",
+            "6|Sail to the Moon|따뜻,공허,우울|Maybe you'll be president, but know right from wrong.|어쩌면 네가 대통령이 될지도 모르지, 하지만 옳고 그름은 분별하렴.|https://www.youtube.com/results?search_query=Radiohead+Sail+to+the+Moon+official+audio",
+            "6|Backdrifts|공허,우울,불안|We're rotting in the mold.|우린 곰팡이 속에서 썩어가고 있어.|https://www.youtube.com/results?search_query=Radiohead+Backdrifts+official+audio",
+            "6|Go to Sleep|신남,분노,반전|Over my dead body.|내 눈에 흙이 들어가기 전엔 안 돼.|https://www.youtube.com/results?search_query=Radiohead+Go+to+Sleep+official+music+video",
+            "6|Where I End and You Begin|불안,서늘,공허|I am up in the clouds, and I can't come down.|난 구름 위에 떠 있어, 그리고 내려갈 수가 없어.|https://www.youtube.com/results?search_query=Radiohead+Where+I+End+and+You+Begin+official+audio",
+            "6|We Suck Young Blood|서늘,우울,불안|Are you hungry? Are you sick?|배가 고픈가? 아픈가?|https://www.youtube.com/results?search_query=Radiohead+We+Suck+Young+Blood+official+audio",
+            "6|The Gloaming|불안,공허,서늘|Genie let out of the bottle.|램프에서 빠져나온 지니.|https://www.youtube.com/results?search_query=Radiohead+The+Gloaming+official+audio",
+            "6|There There|좌절,분노,반전|Just 'cause you feel it, doesn't mean it's there.|네가 느낀다고 해서, 그게 진짜 거기 있는 건 아니야.|https://www.youtube.com/results?search_query=Radiohead+There+There+official+music+video",
+            "6|I Will|우울,서늘,공허|I will lay me down. In a bunker underground.|내 몸을 뉘일 거야. 지하 벙커 속에.|https://www.youtube.com/results?search_query=Radiohead+I+Will+official+audio",
+            "6|A Punchup at a Wedding|분노,서늘,신남|You had to ruin it for all concerned.|넌 관련된 모든 이들을 위해 그걸 망쳐야만 했지.|https://www.youtube.com/results?search_query=Radiohead+A+Punchup+at+a+Wedding+official+audio",
+            "6|Myxomatosis|분노,신남,불안|I don't know why I feel so tongue-tied.|왜 이렇게 말문이 막히는지 모르겠어.|https://www.youtube.com/results?search_query=Radiohead+Myxomatosis+official+audio",
+            "6|Scatterbrain|공허,불안,우울|Any fool can easy pick a hole.|바보라도 쉽게 트집을 잡을 수 있지.|https://www.youtube.com/results?search_query=Radiohead+Scatterbrain+official+audio",
+            "6|A Wolf at the Door|불안,좌절,서늘|I keep the wolf from the door, but he calls me up.|문을 걸어 잠그고 늑대를 피해보지만, 그가 내게 전화를 걸어오네.|https://www.youtube.com/results?search_query=Radiohead+A+Wolf+at+the+Door+official+audio",
+            "7|15 Step|신남,반전,불안|How come I end up where I started?|어째서 난 결국 내가 시작했던 곳으로 돌아오는 걸까?|https://www.youtube.com/results?search_query=Radiohead+15+Step+official+audio",
+            "7|Bodysnatchers|분노,신남,반전|I have no idea what I am talking about.|나도 내가 무슨 소릴 하는지 전혀 모르겠어.|https://www.youtube.com/results?search_query=Radiohead+Bodysnatchers+official+audio",
+            "7|Nude|따뜻,공허,우울|Don't get any big ideas, they're not gonna happen.|거창한 생각은 하지 마, 그런 일은 일어나지 않을 테니까.|https://www.youtube.com/results?search_query=Radiohead+Nude+official+audio",
+            "7|Weird Fishes/Arpeggi|공허,따뜻,반전|I hit the bottom and escape.|난 바닥을 치고 탈출하지.|https://www.youtube.com/results?search_query=Radiohead+Weird+Fishes+Arpeggi+official+audio",
+            "7|All I Need|우울,따뜻,서늘|I am an animal trapped in your hot car.|난 뜨거운 네 차 안에 갇힌 짐승이야.|https://www.youtube.com/results?search_query=Radiohead+All+I+Need+official+audio",
+            "7|Faust Arp|서늘,공허,우울|Wakey wakey, rise and shine.|일어나, 아침이 밝았어.|https://www.youtube.com/results?search_query=Radiohead+Faust+Arp+official+audio",
+            "7|Reckoner|따뜻,공허,기쁨|Because we separate like ripples on a blank shore.|우린 텅 빈 해변의 잔물결처럼 흩어지니까.|https://www.youtube.com/results?search_query=Radiohead+Reckoner+official+audio",
+            "7|House of Cards|우울,따뜻,공허|I don't want to be your friend, I just want to be your lover.|너의 친구가 되고 싶지 않아, 그저 너의 연인이 되고 싶을 뿐.|https://www.youtube.com/results?search_query=Radiohead+House+of+Cards+official+music+video",
+            "7|Jigsaw Falling Into Place|반전,신남,불안|Words are a sawed-off shotgun.|말이란 건 총열을 짧게 자른 산탄총과 같지.|https://www.youtube.com/results?search_query=Radiohead+Jigsaw+Falling+Into+Place+official+music+video",
+            "7|Videotape|공허,우울,따뜻|No matter what happens now, you shouldn't be afraid.|이제 무슨 일이 일어나든 두려워하지 마.|https://www.youtube.com/results?search_query=Radiohead+Videotape+official+audio",
+            "8|Bloom|공허,따뜻,서늘|Open your mouth wide. A universal sigh.|입을 크게 벌려봐. 우주적인 한숨을.|https://www.youtube.com/results?search_query=Radiohead+Bloom+official+audio",
+            "8|Morning Mr Magpie|분노,불안,신남|You got some nerve coming here.|여기 오다니 넌 꽤나 뻔뻔하구나.|https://www.youtube.com/results?search_query=Radiohead+Morning+Mr+Magpie+official+audio",
+            "8|Little by Little|서늘,불안,좌절|I'm such a tease and you're such a flirt.|난 너를 놀리고 넌 내게 추파를 던지지.|https://www.youtube.com/results?search_query=Radiohead+Little+by+Little+official+audio",
+            "8|Feral|불안,공허,서늘|You are not mine.|넌 내 것이 아니야.|https://www.youtube.com/results?search_query=Radiohead+Feral+official+audio",
+            "8|Lotus Flower|기쁨,신남,반전|I will shape myself into your pocket.|네 주머니에 쏙 들어가게 내 몸을 맞출게.|https://www.youtube.com/results?search_query=Radiohead+Lotus+Flower+official+music+video",
+            "8|Codex|따뜻,공허,우울|Sleight of hand, jump off the end.|가벼운 손놀림, 끝자락에서 뛰어내려.|https://www.youtube.com/results?search_query=Radiohead+Codex+official+audio",
+            "8|Give Up the Ghost|따뜻,우울,공허|Don't hurt me.|날 해치지 마.|https://www.youtube.com/results?search_query=Radiohead+Give+Up+the+Ghost+official+audio",
+            "8|Separator|반전,기쁨,따뜻|If you think this is over, then you're wrong.|이게 끝났다고 생각한다면, 네가 틀린 거야.|https://www.youtube.com/results?search_query=Radiohead+Separator+official+audio",
+            "9|Burn the Witch|서늘,분노,불안|Stay in the shadows, cheer at the gallows.|그림자 속에 숨어, 교수대에서 환호해.|https://www.youtube.com/results?search_query=Radiohead+Burn+the+Witch+official+music+video",
+            "9|Daydreaming|공허,좌절,우울|Dreamers, they never learn.|꿈꾸는 자들, 그들은 절대 깨닫지 못하지.|https://www.youtube.com/results?search_query=Radiohead+Daydreaming+official+music+video",
+            "9|Decks Dark|서늘,불안,공허|It's the loudest sound you've ever heard.|그건 네가 들어본 중 가장 큰 소리일 거야.|https://www.youtube.com/results?search_query=Radiohead+Decks+Dark+official+audio",
+            "9|Desert Island Disk|따뜻,기쁨,반전|Different types of love are possible.|다른 형태의 사랑도 가능해.|https://www.youtube.com/results?search_query=Radiohead+Desert+Island+Disk+official+audio",
+            "9|Ful Stop|좌절,분노,불안|You really messed up everything.|넌 정말 모든 걸 망쳐놨어.|https://www.youtube.com/results?search_query=Radiohead+Ful+Stop+official+audio",
+            "9|Glass Eyes|우울,공허,서늘|I feel this love turn cold.|이 사랑이 차갑게 식어가는 게 느껴져.|https://www.youtube.com/results?search_query=Radiohead+Glass+Eyes+official+audio",
+            "9|Identikit|반전,서늘,신남|Broken hearts make it rain.|부서진 마음들이 비를 내리게 해.|https://www.youtube.com/results?search_query=Radiohead+Identikit+official+audio",
+            "9|The Numbers|따뜻,공허,반전|We are of the earth, to her we do return.|우린 흙에서 왔고, 다시 그녀에게로 돌아가지.|https://www.youtube.com/results?search_query=Radiohead+The+Numbers+official+video",
+            "9|Present Tense|공허,따뜻,우울|This dance, it's like a weapon. Of self-defense.|이 춤, 이건 일종의 무기야. 자기방어를 위한.|https://www.youtube.com/results?search_query=Radiohead+Present+Tense+official+audio",
+            "9|Tinker Tailor Soldier Sailor Rich Man Poor Man Beggar Man Thief|불안,서늘,공허|All the holes at once are coming alive.|모든 구멍들이 한꺼번에 살아나고 있어.|https://www.youtube.com/results?search_query=Radiohead+Tinker+Tailor+Soldier+Sailor+official+audio",
+            "9|True Love Waits|우울,공허,좌절|Just don't leave, don't leave.|그저 떠나지만 마, 제발 떠나지 마.|https://www.youtube.com/results?search_query=Radiohead+True+Love+Waits+official+audio"
+        ];
+
+        const radioheadSongs = rawData.map(data => {
+            const parts = data.split('|');
+            return {
+                albumNum: parseInt(parts[0]),
+                title: parts[1],
+                moods: parts[2].split(','), 
+                en: parts[3],
+                kr: parts[4],
+                youtube: parts[5]
+            };
+        });
+
+        let selectedMoods = new Set();
+        let selectedAlbums = new Set();
+
+        const grid = document.getElementById('songGrid');
+        const countDisplay = document.getElementById('countDisplay');
+
+        function showComingSoon(event) {
+            event.preventDefault();
+            alert("[아직 추가하지 않은 기능입니다. 빠른 시일내 추가하겠습니다]");
+        }
+
+        function renderSongs(songsToRender) {
+            grid.innerHTML = '';
+            countDisplay.innerText = `총 ${songsToRender.length}곡 검색됨`;
+            
+            songsToRender.forEach(song => {
+                const card = document.createElement('div');
+                card.className = 'song-card';
+                
+                const tagsHtml = song.moods.map(m => `<span class="tag ${m}">#${m}</span>`).join('');
+                const albumInfo = albumData[song.albumNum];
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="tags-container">${tagsHtml}</div>
+                        <div class="album-info-box">
+                            <div class="album-name">${song.albumNum}집 : ${albumInfo.name}</div>
+                            <img class="album-cover" src="${albumInfo.cover}" alt="${song.albumNum}집" referrerpolicy="no-referrer">
+                        </div>
+                    </div>
+                    <div class="lyrics-box">
+                        <p class="lyrics-en">"${song.en}"</p>
+                        <p class="lyrics-kr">${song.kr}</p>
+                    </div>
+                    <div class="card-footer">
+                        <h3 class="song-title">${song.title}</h3>
+                        <div class="music-links">
+                            <button onclick="showComingSoon(event)" class="link-btn apple" title="Apple Music">${iconApple}</button>
+                            <button onclick="showComingSoon(event)" class="link-btn spotify" title="Spotify">${iconSpotify}</button>
+                            <a href="${song.youtube}" target="_blank" class="link-btn youtube" title="YouTube Music">${iconYoutube}</a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleFilter(type, value, btn) {
+            if (value === 'all') {
+                if (type === 'mood') {
+                    selectedMoods.clear();
+                    document.querySelectorAll('#moodFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                } else {
+                    selectedAlbums.clear();
+                    document.querySelectorAll('#albumFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                }
+                btn.classList.add('active');
+            } else {
+                if (type === 'mood') {
+                    document.querySelector('#moodFilters .filter-btn[onclick*="all"]').classList.remove('active');
+                    if (selectedMoods.has(value)) {
+                        selectedMoods.delete(value);
+                        btn.classList.remove('active');
+                    } else {
+                        selectedMoods.add(value);
+                        btn.classList.add('active');
+                    }
+                    if(selectedMoods.size === 0) document.querySelector('#moodFilters .filter-btn[onclick*="all"]').classList.add('active');
+                } else {
+                    document.querySelector('#albumFilters .filter-btn[onclick*="all"]').classList.remove('active');
+                    if (selectedAlbums.has(value)) {
+                        selectedAlbums.delete(value);
+                        btn.classList.remove('active');
+                    } else {
+                        selectedAlbums.add(value);
+                        btn.classList.add('active');
+                    }
+                    if(selectedAlbums.size === 0) document.querySelector('#albumFilters .filter-btn[onclick*="all"]').classList.add('active');
+                }
+            }
+            
+            let filtered = radioheadSongs.filter(song => {
+                let moodMatch = selectedMoods.size === 0 || song.moods.some(m => selectedMoods.has(m));
+                let albumMatch = selectedAlbums.size === 0 || selectedAlbums.has(song.albumNum);
+                return moodMatch && albumMatch;
+            });
+            renderSongs(filtered);
+        }
+
+        window.onload = () => renderSongs(radioheadSongs);
+    </script>
+</body>
+</html>
